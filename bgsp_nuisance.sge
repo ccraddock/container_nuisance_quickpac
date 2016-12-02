@@ -1,0 +1,23 @@
+#! /bin/bash
+## SGE batch file - bgsp
+#$ -S /bin/bash
+#$ -N bgsp
+#$ -pe mpi_smp 16
+#$ -t 1-2811
+#$ -V
+#$ -wd /home/ubuntu/workspace/cluster_files
+sge_ndx=$(( SGE_TASK_ID - 1 ))
+
+# random sleep so that jobs dont start at _exactly_ the same time
+sleep $(( $SGE_TASK_ID % 10 ))
+
+singularity exec -B /mnt/scratch:/scratch /home/ubuntu/workspace/container_build/singularity_images/cpac_latest.img \
+    python run_gen_nuisance.py \
+      --data_config_file /home/ubuntu/workspace/container_build/container_nuisance_quickpac/data_config.yml \
+      --pipeline_file /home/ubuntu/workspace/container_build/container_nuisance_quickpac/pipeline_nuisance.yml \
+      --aws_input_creds /home/ubuntu/workspace/cluster_files/cfroehlich-fcp-indi-keys.csv \
+      --aws_output_creds /home/ubuntu/workspace/cluster_files/cfroehlich-fcp-indi-keys.csv \
+      --n_cpus 2 --mem 4 \
+      s3://fcp-indi/data/Projects/BrainGenomicsSuperstructProject/cpac_out/output/ \
+      s3://fcp-indi/data/Projects/BrainGenomicsSuperstructProject/cpac_out \
+      participant --participant_ndx ${sge_ndx}
