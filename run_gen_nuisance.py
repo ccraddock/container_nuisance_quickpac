@@ -8,7 +8,7 @@ import yaml
 import sys
 
 import datetime, time
-
+import shutil
 
 def run(command, env={}):
     process = Popen(command, stdout=PIPE, stderr=subprocess.STDOUT,
@@ -400,6 +400,9 @@ if args.analysis_level == "participant":
 
         cn.run(plugin='MultiProc', plugin_args={'n_procs': 1})
 
+        print "Removing working directory"
+        if c['removeWorkingDir'] == True:
+            shutil.rmtree(working_dir, ignore_errors=True)
 else:
     print ("This has been a dry run, the pipeline and data configuration files should" + \
            " have been written to %s and %s respectively. CPAC will not be run." % (config_file, subject_list_file))
