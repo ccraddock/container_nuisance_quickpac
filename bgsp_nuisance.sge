@@ -2,17 +2,17 @@
 ## SGE batch file - bgsp
 #$ -S /bin/bash
 #$ -N bgsp
-#$ -pe mpi_smp 16
-#$ -t 1-2811
+#$ -pe mpi_smp 2
+#$ -t 1818-2812
 #$ -V
-#$ -wd /home/ubuntu/workspace/cluster_files
+#$ -wd /home/ubuntu/workspace/container_build/container_nuisance_quickpac/cluster_files
 sge_ndx=$(( SGE_TASK_ID - 1 ))
 
 # random sleep so that jobs dont start at _exactly_ the same time
 sleep $(( $SGE_TASK_ID % 10 ))
 
 singularity exec -B /mnt/scratch:/scratch /home/ubuntu/workspace/container_build/singularity_images/cpac_latest.img \
-    python run_gen_nuisance.py \
+    python /home/ubuntu/workspace/container_build/container_nuisance_quickpac/run_gen_nuisance.py \
       --data_config_file /home/ubuntu/workspace/container_build/container_nuisance_quickpac/data_config.yml \
       --pipeline_file /home/ubuntu/workspace/container_build/container_nuisance_quickpac/pipeline_nuisance.yml \
       --aws_input_creds /home/ubuntu/workspace/cluster_files/cfroehlich-fcp-indi-keys.csv \
